@@ -1,0 +1,3 @@
+[submodule "third_party/pico-ICM45686"]
+	path = third_party/pico-ICM45686
+	url = https://github.com/adenny5702/pico-ICM45686.git
