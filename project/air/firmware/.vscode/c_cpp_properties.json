@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Air Firmware",
+            "compileCommands": "${workspaceFolder:Root}/build/project/air-firmware-build/compile_commands.json",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

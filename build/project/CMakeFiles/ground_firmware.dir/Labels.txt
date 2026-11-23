@@ -1,0 +1,13 @@
+# Target labels
+ ground_firmware
+# Source files and their labels
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/ground_firmware
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/ground_firmware.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/ground_firmware-complete.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-build.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-configure.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-download.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-install.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-mkdir.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-patch.rule
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/ground_firmware-prefix/src/ground_firmware-stamp/ground_firmware-update.rule

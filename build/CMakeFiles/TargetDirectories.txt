@@ -1,0 +1,7 @@
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/CMakeFiles/edit_cache.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/CMakeFiles/rebuild_cache.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/air_firmware.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/ground_firmware.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/ground_app.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/edit_cache.dir
+C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/CMakeFiles/rebuild_cache.dir

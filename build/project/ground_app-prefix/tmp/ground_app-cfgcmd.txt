@@ -1,0 +1,1 @@
+cmd='C:/Program Files/CMake/bin/cmake.exe;-DCMAKE_BUILD_TYPE=;-DROOT_DIR=C:/Users/yetif/Documents/Coding/C++/Rocket;-DCMAKE_EXPORT_COMPILE_COMMANDS=ON;-GNinja;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'

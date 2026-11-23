@@ -1,0 +1,20 @@
+{
+    "folders": [
+        {
+            "name": "Root",
+            "path": "."
+        },
+        {
+            "name": "Air Firmware",
+            "path": "project/air/firmware"
+        },
+        {
+            "name": "Ground Firmware",
+            "path": "project/ground/firmware"
+        },
+        {
+            "name": "Ground App",
+            "path": "project/ground/app"
+        }
+    ]
+}

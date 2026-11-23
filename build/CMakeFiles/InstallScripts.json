@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/yetif/Documents/Coding/C++/Rocket/build/cmake_install.cmake",
+		"C:/Users/yetif/Documents/Coding/C++/Rocket/build/project/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
