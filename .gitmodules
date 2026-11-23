@@ -1,3 +1,6 @@
 [submodule "third_party/pico-ICM45686"]
 	path = third_party/pico-ICM45686
 	url = https://github.com/adenny5702/pico-ICM45686.git
+[submodule "third_party/pico-sdk"]
+	path = third_party/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
