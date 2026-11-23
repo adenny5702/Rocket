@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace protocol::telemetry {
+namespace rocket::proto {
 
 enum class PacketType : uint8_t {
     // Bidirectional
@@ -68,4 +68,4 @@ struct TelemetryPayload {
 
 #pragma pack(pop)
 
-} // namespace protocol::telemetry
+} // namespace rocket::proto

@@ -9,7 +9,7 @@ pico_sdk_init()
 
 add_subdirectory(${ROOT_DIR}/third_party/RadioLib RadioLib)
 add_subdirectory(${ROOT_DIR}/third_party/pico-ICM45686 pico-ICM45686)
-add_subdirectory(${ROOT_DIR}/project/shared/protocol/telemetry protocol_telemetry)
+add_subdirectory(${ROOT_DIR}/project/shared/protocol protocol)
 
 add_executable(AirFirmware 
     src/main.cpp
