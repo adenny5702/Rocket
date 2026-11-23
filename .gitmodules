@@ -4,3 +4,6 @@
 [submodule "third_party/pico-sdk"]
 	path = third_party/pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk.git
+[submodule "third_party/RadioLib"]
+	path = third_party/RadioLib
+	url = https://github.com/jgromes/RadioLib.git
