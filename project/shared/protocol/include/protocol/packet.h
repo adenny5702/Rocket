@@ -1,8 +1,6 @@
 #pragma once
 #include <cstdint>
 
-namespace shared::proto {
-
 enum class PacketType : uint8_t {
     // Bidirectional
     Heartbeat = 1,
@@ -40,7 +38,7 @@ enum class AckResponse : uint8_t {
 
 // Bidirectional
 
-struct HeartbeatPayload {
+struct HeartbeatPacket {
     FlightState flight_state;
     int8_t      rx_rssi;
     int8_t      rx_snr;
@@ -48,18 +46,18 @@ struct HeartbeatPayload {
 
 // Uplink
 
-struct CommandPayload {
+struct CommandPacket {
     CommandType command;
     uint16_t    key;
 };
 
 // Downlink
 
-struct SyncPayload {
+struct SyncPacket {
     FlightState state;
 };
 
-struct TelemetryPayload {
+struct TelemetryPacket {
     uint32_t timestamp_ms;
     int32_t  altitude_cm;     // Altitude in cm
     int16_t  velocity_cms[3]; // Velocity vector in cm/s
@@ -67,5 +65,3 @@ struct TelemetryPayload {
 };
 
 #pragma pack(pop)
-
-} // namespace shared::proto

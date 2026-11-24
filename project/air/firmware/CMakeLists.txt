@@ -5,6 +5,9 @@ include("${PICO_SDK_PATH}/pico_sdk_init.cmake")
 
 project(AirFirmware LANGUAGES C CXX ASM)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 pico_sdk_init()
 
 add_subdirectory(${ROOT_DIR}/third_party/RadioLib RadioLib)
