@@ -1,6 +1,6 @@
-add_library(protocol_telemetry INTERFACE)
+add_library(protocol INTERFACE)
 
-target_include_directories(protocol_telemetry
+target_include_directories(protocol
     INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

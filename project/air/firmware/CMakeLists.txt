@@ -19,10 +19,14 @@ add_executable(AirFirmware
     "${ROOT_DIR}/third_party/RadioLib/src/hal/RPiPico/PicoHal.cpp"
 )
 
+pico_enable_stdio_uart(AirFirmware 0)
+pico_enable_stdio_usb(AirFirmware 1)
+
 target_compile_definitions(AirFirmware PUBLIC RADIOLIB_BUILD_RPI_PICO)
 target_link_libraries(AirFirmware 
     PRIVATE 
-    pico_stdlib 
+    pico_stdlib
+    pico_multicore
     hardware_spi
     hardware_gpio
     hardware_timer
@@ -30,7 +34,7 @@ target_link_libraries(AirFirmware
     hardware_pwm
     RadioLib
     pico_icm45686
-    protocol_telemetry
+    protocol
 )
 
 pico_add_uf2_output(AirFirmware)

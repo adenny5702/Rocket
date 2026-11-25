@@ -51,3 +51,6 @@ AlignConsecutiveDeclarations:
 
 AlignConsecutiveAssignments:
   Enabled: true
+
+AlignConsecutiveMacros:
+  Enabled: true

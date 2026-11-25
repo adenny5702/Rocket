@@ -8,8 +8,8 @@
 #include <type_traits>
 
 template <typename T, size_t Capacity> class SpscQueue {
-    static_assert(std::has_single_bit(Capacity) && Capacity >= 2,
-                  "SpscQueue Capacity must be a power of two >= 2");
+    static_assert(std::has_single_bit(Capacity) && Capacity > 1,
+                  "SpscQueue Capacity must be a power of two and be greater than 1");
     static_assert(std::is_trivially_copyable_v<T>, "SpscQueue elements must be trivially copyable");
 
 public:
