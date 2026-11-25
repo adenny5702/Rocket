@@ -12,6 +12,7 @@ pico_sdk_init()
 
 add_subdirectory(${ROOT_DIR}/third_party/RadioLib RadioLib)
 add_subdirectory(${ROOT_DIR}/project/shared/protocol protocol)
+add_subdirectory(${ROOT_DIR}/project/shared/config config)
 
 add_executable(GroundFirmware 
     src/main.cpp
@@ -33,6 +34,7 @@ target_link_libraries(GroundFirmware
     hardware_pwm
     RadioLib
     protocol
+    config
 )
 
 pico_add_uf2_output(GroundFirmware)

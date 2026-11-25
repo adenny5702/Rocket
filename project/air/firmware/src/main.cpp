@@ -1,6 +1,8 @@
 #include <cstring>
 
-#include "protocol/packet.h"
+#include "config/radio.hpp"
+#include "pins.hpp"
+#include "protocol/packet.hpp"
 
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
@@ -17,18 +19,6 @@
 #define kPinRadioRst  13
 #define kPinRadioGpio 4
 
-#define kRadioFrequency       RADIOLIB_UNIT_MEGA(915)
-#define kRadioBandwidth       RADIOLIB_UNIT_KILO(125)
-#define kRadioSpreadingFactor 7
-#define kRadioCodingRate      7
-#define kRadioSyncWord        111
-#define kRadioPower           22
-#define kRadioCRCLength       2
-
-PicoHal hal(spi1, kPinRadioMiso, kPinRadioMosi, kPinRadioSck);
-Module  mod(&hal, kPinRadioCs, kPinRadioIrq, kPinRadioRst, kPinRadioGpio);
-SX1262  radio(&mod);
-
 static queue_t g_cmd_queue;
 volatile bool  g_radio_irq_fired = false;
 
@@ -37,8 +27,19 @@ void radio_dio1_isr() {
 }
 
 void core1Main() {
-    auto state = radio.begin({kRadioFrequency, kRadioBandwidth, kRadioSpreadingFactor,
-                              kRadioCodingRate, kRadioSyncWord, kRadioPower});
+    PicoHal hal(spi1, pins::radio::Miso, pins::radio::Mosi, pins::radio::Sck);
+    Module  mod(&hal, pins::radio::Cs, pins::radio::Irq, pins::radio::Rst, pins::radio::Gpio);
+    SX1262  radio(&mod);
+
+    auto state = radio.begin({
+        cfg::radio::Frequency,
+        cfg::radio::Bandwidth,
+        cfg::radio::SpreadingFactor,
+        cfg::radio::CodingRate,
+        cfg::radio::SyncWord,
+        cfg::radio::Power,
+        cfg::radio::PreambleLength,
+    });
 
     if (state != RADIOLIB_ERR_NONE) {
         printf("Radio init failed: %d\n", state);
@@ -47,7 +48,7 @@ void core1Main() {
         }
     }
 
-    radio.setCRC(kRadioCRCLength);
+    radio.setCRC(cfg::radio::CrcLength);
 
     radio.setDio1Action(radio_dio1_isr);
     radio.startReceive();
