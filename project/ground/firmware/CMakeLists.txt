@@ -25,10 +25,11 @@ target_compile_definitions(GroundFirmware PUBLIC RADIOLIB_BUILD_RPI_PICO)
 target_link_libraries(GroundFirmware 
     PRIVATE 
     pico_stdlib 
+    pico_multicore
+    pico_util
     hardware_spi
     hardware_gpio
     hardware_timer
-    pico_multicore
     hardware_pwm
     RadioLib
     protocol

@@ -1,9 +1,10 @@
-#include "pico/multicore.h"
-#include "pico/stdlib.h"
 #include <cstring>
 
 #include "protocol/packet.h"
-#include "spsc_queue.h"
+
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
+#include "pico/util/queue.h"
 
 #include "RadioLib.h"
 #include "hal/RPiPico/PicoHal.h"
@@ -18,7 +19,7 @@
 
 #define kRadioFrequency       RADIOLIB_UNIT_MEGA(915)
 #define kRadioBandwidth       RADIOLIB_UNIT_KILO(125)
-#define kRadioSpreadingFactor 9
+#define kRadioSpreadingFactor 7
 #define kRadioCodingRate      7
 #define kRadioSyncWord        111
 #define kRadioPower           22
@@ -28,8 +29,8 @@ PicoHal hal(spi1, kPinRadioMiso, kPinRadioMosi, kPinRadioSck);
 Module  mod(&hal, kPinRadioCs, kPinRadioIrq, kPinRadioRst, kPinRadioGpio);
 SX1262  radio(&mod);
 
-SpscQueue<CommandPacket, 16> g_cmd_queue;
-volatile bool                g_radio_irq_fired = false;
+static queue_t g_cmd_queue;
+volatile bool  g_radio_irq_fired = false;
 
 void radio_dio1_isr() {
     g_radio_irq_fired = true;
@@ -66,7 +67,7 @@ void core1Main() {
         if (rx_state == RADIOLIB_ERR_NONE && len == sizeof(CommandPacket)) {
             CommandPacket pkt;
             std::memcpy(&pkt, buffer, sizeof(CommandPacket));
-            g_cmd_queue.tryPush(pkt);
+            queue_try_add(&g_cmd_queue, &pkt);
         }
 
         radio.startReceive();
@@ -75,6 +76,8 @@ void core1Main() {
 
 int main() {
     stdio_init_all();
+    queue_init(&g_cmd_queue, sizeof(CommandPacket), 16);
+
     sleep_ms(5000);
 
     printf("Launching core 1...\n");
@@ -82,7 +85,7 @@ int main() {
 
     while (true) {
         CommandPacket pkt;
-        if (g_cmd_queue.tryPop(pkt)) {
+        if (queue_try_remove(&g_cmd_queue, &pkt)) {
             printf("CommandType: %u | Key: %u\n", pkt.command, pkt.key);
         }
         tight_loop_contents();

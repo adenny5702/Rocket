@@ -13,6 +13,7 @@ pico_sdk_init()
 add_subdirectory(${ROOT_DIR}/third_party/RadioLib RadioLib)
 add_subdirectory(${ROOT_DIR}/third_party/pico-ICM45686 pico-ICM45686)
 add_subdirectory(${ROOT_DIR}/project/shared/protocol protocol)
+add_subdirectory(${ROOT_DIR}/project/shared/config config)
 
 add_executable(AirFirmware 
     src/main.cpp
@@ -27,6 +28,7 @@ target_link_libraries(AirFirmware
     PRIVATE 
     pico_stdlib
     pico_multicore
+    pico_util
     hardware_spi
     hardware_gpio
     hardware_timer
@@ -35,6 +37,7 @@ target_link_libraries(AirFirmware
     RadioLib
     pico_icm45686
     protocol
+    config
 )
 
 pico_add_uf2_output(AirFirmware)

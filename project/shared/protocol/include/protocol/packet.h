@@ -39,9 +39,8 @@ enum class AckResponse : uint8_t {
 // Bidirectional
 
 struct HeartbeatPacket {
-    FlightState flight_state;
-    int8_t      rx_rssi;
-    int8_t      rx_snr;
+    int8_t rx_rssi;
+    int8_t rx_snr;
 };
 
 // Uplink
@@ -53,7 +52,7 @@ struct CommandPacket {
 
 // Downlink
 
-struct SyncPacket {
+struct StatePacket {
     FlightState state;
 };
 
