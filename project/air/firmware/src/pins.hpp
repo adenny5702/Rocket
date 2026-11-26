@@ -1,18 +1,29 @@
 #pragma once
+
 #include "pico/types.h"
 
-namespace pins {
+namespace rocket::air::pins {
 
-namespace radio {
+namespace i2c_bus_1 {
 
-constexpr uint Miso = 12;
-constexpr uint Mosi = 11;
-constexpr uint Sck  = 10;
-constexpr uint Cs   = 9;
-constexpr uint Irq  = 5;
-constexpr uint Rst  = 13;
-constexpr uint Gpio = 4;
+inline constexpr uint sda = 2;
+inline constexpr uint scl = 3;
 
-} // namespace radio
+} // namespace i2c_bus_1
 
-} // namespace pins
+namespace imu {
+
+inline constexpr uint interrupt = 25;
+
+}
+
+namespace indicators {
+
+inline constexpr uint pyro_1_primary = 15;
+inline constexpr uint pyro_1_secondary = 18;
+inline constexpr uint pyro_2_primary = 16;
+inline constexpr uint pyro_2_secondary = 19;
+
+} // namespace indicators
+
+} // namespace rocket::air::pins

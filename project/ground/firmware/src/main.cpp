@@ -1,99 +1,106 @@
-#include <atomic>
-#include <cstring>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 
-#include "config/radio.hpp"
-#include "pins.hpp"
-#include "protocol/packet.hpp"
+#include "radio_link.hpp"
+#include "rocket/shared/packet.hpp"
+#include "usb_protocol.hpp"
 
-#include "pico/multicore.h"
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
 
-#include "RadioLib.h"
-#include "hal/RPiPico/PicoHal.h"
+namespace {
 
-static queue_t    g_tx_queue;
-std::atomic<bool> g_tx_done_irq{false};
+constexpr std::uint16_t queue_capacity = 16;
+constexpr std::size_t usb_line_capacity = 64;
 
-void radio_dio1_isr() {
-    g_tx_done_irq.store(true, std::memory_order_release);
-}
+queue_t outbound_frames;
+queue_t received_frames;
+queue_t radio_errors;
+char usb_line[usb_line_capacity]{};
+std::size_t usb_line_length = 0;
+bool discarding_oversized_line = false;
 
-void core1Main() {
-    PicoHal hal(spi1, pins::radio::Miso, pins::radio::Mosi, pins::radio::Sck);
-    Module  mod(&hal, pins::radio::Cs, pins::radio::Irq, pins::radio::Rst, pins::radio::Gpio);
-    SX1262  radio(&mod);
-
-    auto state = radio.begin({
-        cfg::radio::Frequency,
-        cfg::radio::Bandwidth,
-        cfg::radio::SpreadingFactor,
-        cfg::radio::CodingRate,
-        cfg::radio::SyncWord,
-        cfg::radio::Power,
-        cfg::radio::PreambleLength,
-    });
-
-    if (state != RADIOLIB_ERR_NONE) {
-        printf("Ground Radio init failed: %d\n", state);
-        while (true) {
-            tight_loop_contents();
-        }
+void process_usb_line(const char *line) {
+    rocket::protocol::RadioFrame frame{};
+    if (!rocket::ground::usb_protocol::parse_command_line(line, frame)) {
+        rocket::ground::usb_protocol::write_error("INVALID_COMMAND");
+        return;
     }
 
-    radio.setCRC(cfg::radio::CrcLength);
-    radio.setDio1Action(radio_dio1_isr);
+    if (!queue_try_add(&outbound_frames, &frame)) {
+        rocket::ground::usb_protocol::write_error("COMMAND_QUEUE_FULL");
+    }
+}
 
-    bool    is_transmitting = false;
-    uint8_t tx_buffer[sizeof(CommandPacket)];
+void poll_usb_commands() {
+    constexpr std::uint8_t max_bytes_per_poll = 32;
+    for (std::uint8_t count = 0; count < max_bytes_per_poll; ++count) {
+        const int input = getchar_timeout_us(0);
+        if (input < 0) {
+            return;
+        }
 
-    while (true) {
-        if (is_transmitting) {
-            if (g_tx_done_irq.exchange(false, std::memory_order_acquire)) {
-                radio.finishTransmit();
-                is_transmitting = false;
+        if (input == '\r') {
+            continue;
+        }
+        if (input == '\n') {
+            if (!discarding_oversized_line) {
+                usb_line[usb_line_length] = '\0';
+                process_usb_line(usb_line);
             }
-            tight_loop_contents();
+            usb_line_length = 0;
+            discarding_oversized_line = false;
             continue;
         }
 
-        CommandPacket pkt;
-        if (queue_try_remove(&g_tx_queue, &pkt)) {
-            std::memcpy(tx_buffer, &pkt, sizeof(CommandPacket));
-
-            if (radio.startTransmit(tx_buffer, sizeof(CommandPacket)) == RADIOLIB_ERR_NONE) {
-                is_transmitting = true;
-            }
-
-            printf("Sent packet -> CommandType: %u | Key: %u\n", pkt.command, pkt.key);
+        if (discarding_oversized_line) {
+            continue;
         }
 
-        tight_loop_contents();
+        if (usb_line_length + 1 < usb_line_capacity) {
+            usb_line[usb_line_length++] = static_cast<char>(input);
+        } else {
+            usb_line_length = 0;
+            discarding_oversized_line = true;
+            rocket::ground::usb_protocol::write_error("COMMAND_TOO_LONG");
+        }
     }
 }
 
+void forward_received_frames() {
+    rocket::protocol::RadioFrame frame{};
+    while (queue_try_remove(&received_frames, &frame)) {
+        switch (frame.type) {
+        case rocket::protocol::PacketType::Telemetry:
+            rocket::ground::usb_protocol::write_telemetry(frame);
+            break;
+        case rocket::protocol::PacketType::CommandAck:
+            rocket::ground::usb_protocol::write_acknowledgement(frame);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+} // namespace
+
 int main() {
     stdio_init_all();
-    queue_init(&g_tx_queue, sizeof(CommandPacket), 16);
+    queue_init(&outbound_frames, sizeof(rocket::protocol::RadioFrame), queue_capacity);
+    queue_init(&received_frames, sizeof(rocket::protocol::RadioFrame), queue_capacity);
+    queue_init(&radio_errors, sizeof(std::int16_t), queue_capacity);
 
-    sleep_ms(3000);
-
-    printf("Launching Ground Core 1...\n");
-    multicore_launch_core1(core1Main);
-
-    uint8_t key_val = 0;
+    rocket::ground::RadioLink::launch(outbound_frames, received_frames, radio_errors);
 
     while (true) {
-        CommandPacket cmd{};
-        cmd.command = CommandType::EnterTesting;
-        cmd.key     = key_val++;
-
-        if (queue_try_add(&g_tx_queue, &cmd)) {
-            printf("Queued send -> CommandType: %u | Key: %u\n", cmd.command, cmd.key);
+        poll_usb_commands();
+        forward_received_frames();
+        std::int16_t radio_error = 0;
+        while (queue_try_remove(&radio_errors, &radio_error)) {
+            printf("ERR RADIO %d\n", static_cast<int>(radio_error));
         }
-
-        sleep_ms(500);
+        tight_loop_contents();
     }
-
-    return 0;
 }

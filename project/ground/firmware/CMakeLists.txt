@@ -11,10 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 pico_sdk_init()
 
 add_subdirectory(${ROOT_DIR}/third_party/RadioLib RadioLib)
-add_subdirectory(${ROOT_DIR}/project/shared/protocol protocol)
-add_subdirectory(${ROOT_DIR}/project/shared/config config)
+add_subdirectory(${ROOT_DIR}/project/shared shared)
 
-add_executable(GroundFirmware 
+add_executable(GroundFirmware
     src/main.cpp
     "${ROOT_DIR}/third_party/RadioLib/src/hal/RPiPico/PicoHal.cpp"
 )
@@ -22,10 +21,10 @@ add_executable(GroundFirmware
 pico_enable_stdio_uart(GroundFirmware 0)
 pico_enable_stdio_usb(GroundFirmware 1)
 
-target_compile_definitions(GroundFirmware PUBLIC RADIOLIB_BUILD_RPI_PICO)
-target_link_libraries(GroundFirmware 
-    PRIVATE 
-    pico_stdlib 
+target_compile_definitions(GroundFirmware PRIVATE RADIOLIB_BUILD_RPI_PICO)
+target_link_libraries(GroundFirmware
+    PRIVATE
+    pico_stdlib
     pico_multicore
     pico_util
     hardware_spi
@@ -33,8 +32,7 @@ target_link_libraries(GroundFirmware
     hardware_timer
     hardware_pwm
     RadioLib
-    protocol
-    config
+    rocket::shared
 )
 
 pico_add_uf2_output(GroundFirmware)
